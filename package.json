@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "expo": "^48.0.17",
+    "metro-core": "^0.76.4"
+  }
+}

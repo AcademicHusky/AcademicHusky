@@ -1,0 +1,1 @@
+{"version":3,"names":["useAnimatedValue","initialValue","current","useLazyRef","Animated","Value"],"sourceRoot":"../../../src","sources":["utils/useAnimatedValue.tsx"],"mappings":";;;;;;AAAA;AAEA;AAAsC;AAEvB,SAASA,gBAAgB,CAACC,YAAoB,EAAE;EAC7D,MAAM;IAAEC;EAAQ,CAAC,GAAG,IAAAC,mBAAU,EAAC,MAAM,IAAIC,qBAAQ,CAACC,KAAK,CAACJ,YAAY,CAAC,CAAC;EAEtE,OAAOC,OAAO;AAChB"}

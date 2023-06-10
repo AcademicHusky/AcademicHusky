@@ -1,0 +1,14 @@
+declare const Appbar: (({ children, dark, style, mode, elevated, safeAreaInsets, theme: themeOverrides, ...rest }: import("./Appbar").Props) => JSX.Element) & {
+    Content: {
+        ({ color: titleColor, subtitle, subtitleStyle, onPress, disabled, style, titleRef, titleStyle, title, mode, theme: themeOverrides, testID, ...rest }: import("./AppbarContent").Props): JSX.Element;
+        displayName: string;
+    };
+    Action: import("../../utils/forwardRef").ForwarRefComponent<import("react-native").View, import("./AppbarAction").Props>;
+    BackAction: import("../../utils/forwardRef").ForwarRefComponent<import("react-native").View, import("./AppbarBackAction").Props>;
+    Header: {
+        ({ statusBarHeight, style, dark, mode, elevated, theme: themeOverrides, testID, ...rest }: import("./AppbarHeader").Props): JSX.Element;
+        displayName: string;
+    };
+};
+export default Appbar;
+//# sourceMappingURL=index.d.ts.map

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
 import Task from '../components/Task';
+import { useHeaderHeight } from '@react-navigation/elements'
 
 export default function ToDoList() {
   const [task, setTask] = useState();
@@ -17,6 +18,9 @@ export default function ToDoList() {
     itemsCopy.splice(index, 1);
     setTaskItems(itemsCopy)
   }
+
+  /* creates height variable since we are using react-navigation */
+  const height = useHeaderHeight()
 
   return (
     <View style={styles.container}>
@@ -49,7 +53,10 @@ export default function ToDoList() {
 
       {/* Write a task */}
       {/* Uses keyboard avoiding view to ensures the keyboard does not cover the items on screen */}
+
       <KeyboardAvoidingView 
+        /*set vertical offset to counterract react-nav issues with keyboard  */
+        keyboardVerticalOffset={height + 10}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
       >

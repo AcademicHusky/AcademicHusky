@@ -40,12 +40,12 @@ export default function ToDoList() {
             </TouchableOpacity>
           )}
           renderHiddenItem={({ item, index }) => (
-            <View style={styles.items}>
-              <TouchableOpacity style={styles.backRightBtnRight} onPress={() => handleDeleteTask(index)}>
-                <MaterialCommunityIcons name="trash-can-outline" size={24} color="#FFF" />
+            <View>
+              <TouchableOpacity style={[styles.backRightBtn, styles.trashButton]} onPress={() => handleDeleteTask(index)}>
+                <MaterialCommunityIcons name="trash-can-outline" size={35} color="#FFF" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.backRightBtn} onPress={() => console.log('Edit pressed')}>
-                <MaterialCommunityIcons name="pencil" size={24} color="#FFF" />
+              <TouchableOpacity style={[styles.backRightBtn, styles.editButton]} onPress={() => console.log('Edit pressed')}>
+                <MaterialCommunityIcons name="pencil" size={35} color="#FFF" />
               </TouchableOpacity>
             </View>
       )}
@@ -121,6 +121,22 @@ const styles = StyleSheet.create({
     borderColor: '#C0C0C0',
     borderWidth: 1,
   },
+  editButton: {
+    backgroundColor: 'blue',
+    right: 75,
+    marginRight: 'auto',
+
+  },
+  trashButton: {
+    backgroundColor: 'red',
+    right: 4,
+    width: 75,
+    marginRight: 0,
+    marginLeft: 'auto',
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+
+  },
   backRightBtn: {
     alignItems: 'center',
     bottom: 0,
@@ -128,15 +144,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: 75,
-  },
-  backRightBtnRight: {
-    backgroundColor: '#FF0000',
-
+    height: 50,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
     
-  },
-  trash: {
-    height: 25,
-    width: 25,
-    marginRight: 7,
   }
 });

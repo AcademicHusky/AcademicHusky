@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView, Touchable } from 'react-native';
 import Task from '../components/Task';
-import { useHeaderHeight } from '@react-navigation/elements'
+import { useHeaderHeight } from '@react-navigation/elements';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function ToDoList() {
   const [task, setTask] = useState();
@@ -13,11 +15,11 @@ export default function ToDoList() {
     setTask(null);
   }
 
-  const completeTask = (index) => {
+  const handleDeleteTask = (index) => {
     let itemsCopy = [...taskItems];
     itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy)
-  }
+    setTaskItems(itemsCopy);
+  };  
 
   /* creates height variable since we are using react-navigation */
   const height = useHeaderHeight()
@@ -25,30 +27,34 @@ export default function ToDoList() {
   return (
     <View style={styles.container}>
       {/* Scroll view */}
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1
-        }}
-        keyboardShouldPersistTaps='handled'
-      >
+      <ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps='handled'>
 
       {/* Today's Tasks */}
       <View style={styles.tasksWrapper}>
         <Text style={styles.sectionTitle}>Today's tasks</Text>
-        <View style={styles.items}>
-          {/* Place where the tasks go */}
-          {
-            taskItems.map((item, index) => {
-              return (
-                <TouchableOpacity key={index}  onPress={() => completeTask(index)}>
-                  <Task text={item} /> 
-                </TouchableOpacity>
-              )
-            })
-          }
-        </View>
+        <SwipeListView 
+          data={taskItems}
+          renderItem = {({ item, index }) => (
+            <TouchableOpacity onPress={() => handleDeleteTask(index)}>
+              <Task text={item} />
+            </TouchableOpacity>
+          )}
+          renderHiddenItem={({ item, index }) => (
+            <View style={styles.items}>
+              <TouchableOpacity style={styles.backRightBtnRight} onPress={() => handleDeleteTask(index)}>
+                <MaterialCommunityIcons name="trash-can-outline" size={24} color="#FFF" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.backRightBtn} onPress={() => console.log('Edit pressed')}>
+                <MaterialCommunityIcons name="pencil" size={24} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+      )}
+      rightOpenValue={-150} // defines the swipeable area width
+      disableRightSwipe={true} // disable swiping from the right side
+      keyExtractor={(item, index) => index.toString()}
+      />
       </View>
-        
+      
       </ScrollView>
 
       {/* Write a task */}
@@ -115,5 +121,22 @@ const styles = StyleSheet.create({
     borderColor: '#C0C0C0',
     borderWidth: 1,
   },
-  addText: {},
+  backRightBtn: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    width: 75,
+  },
+  backRightBtnRight: {
+    backgroundColor: '#FF0000',
+
+    
+  },
+  trash: {
+    height: 25,
+    width: 25,
+    marginRight: 7,
+  }
 });

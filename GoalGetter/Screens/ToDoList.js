@@ -1,154 +1,183 @@
-import React, {useState} from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView, Touchable } from 'react-native';
-import Task from '../components/Task';
+import React, { useState, useEffect } from 'react';
+import { FlatList, Button, KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView, Touchable } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Modal from 'react-native-modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTaskID, setTasks } from '../redux/actions';
+import Store from '../redux/store';
 
-export default function ToDoList() {
-  const [task, setTask] = useState();
-  const [taskItems, setTaskItems] = useState([]);
+export default function ToDoList({navigation}) {
 
-  const handleAddTask = () => {
-    Keyboard.dismiss();
-    setTaskItems([...taskItems, task])
-    setTask(null);
+  const { tasks } = useSelector(state => state.taskReducer);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    getTasks();
+  }, [])
+
+  const getTasks = () => {
+    AsyncStorage.getItem('Tasks')
+    .then(tasks => {
+      const parsedTasks = JSON.parse(tasks);
+      if(parsedTasks && typeof parsedTasks === 'object') {
+        dispatch(setTasks(parsedTasks));
+      }
+    })
+    .catch(err=>console.log(err))
   }
-
-  const handleDeleteTask = (index) => {
-    let itemsCopy = [...taskItems];
-    itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy);
-  };  
-
-  /* creates height variable since we are using react-navigation */
-  const height = useHeaderHeight()
+  
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const handleModal = () => setIsModalVisible (() => !isModalVisible);
 
   return (
-    <View style={styles.container}>
-      {/* Scroll view */}
+    <View style={styles.body}>
       <ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps='handled'>
-
-      {/* Today's Tasks */}
-      <View style={styles.tasksWrapper}>
-        <Text style={styles.sectionTitle}>Today's tasks</Text>
-        <SwipeListView 
-          data={taskItems}
-          renderItem = {({ item, index }) => (
-            <TouchableOpacity onPress={() => handleDeleteTask(index)}>
-              <Task text={item} />
-            </TouchableOpacity>
-          )}
-          renderHiddenItem={({ item, index }) => (
-            <View>
-              <TouchableOpacity style={[styles.backRightBtn, styles.trashButton]} onPress={() => handleDeleteTask(index)}>
-                <MaterialCommunityIcons name="trash-can-outline" size={35} color="#FFF" />
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.backRightBtn, styles.editButton]} onPress={() => console.log('Edit pressed')}>
-                <MaterialCommunityIcons name="pencil" size={35} color="#FFF" />
-              </TouchableOpacity>
-            </View>
-      )}
-      rightOpenValue={-150} // defines the swipeable area width
-      disableRightSwipe={true} // disable swiping from the right side
-      keyExtractor={(item, index) => index.toString()}
-      />
-      </View>
-      
-      </ScrollView>
-
-      {/* Write a task */}
-      {/* Uses keyboard avoiding view to ensures the keyboard does not cover the items on screen */}
-
-      <KeyboardAvoidingView 
-        /*set vertical offset to counterract react-nav issues with keyboard  */
-        keyboardVerticalOffset={height + 10}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.writeTaskWrapper}
-      >
-        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)} />
-        <TouchableOpacity onPress={() => handleAddTask()}>
-          <View style={styles.addWrapper}>
-            <Text style={styles.addText}>+</Text>
-          </View>
+        <SwipeListView
+            data={tasks}
+            renderItem={({ item }) => (
+                <TouchableOpacity
+                    activeOpacity={1}
+                    style={styles.item}
+                    onPress={() => {
+                        dispatch(setTaskID(item.ID));
+                    }}>
+                    <Text
+                        style={[styles.title
+                        ]}
+                        numberOfLines= {1}
+                    >
+                        {item.Title}
+                    </Text>
+                    <Text
+                        style={[styles.subtext
+                        ]}
+                        numberOfLines= {1}
+                    >
+                        {item.Desc}
+                    </Text>
+                </TouchableOpacity>
+            )}
+            renderHiddenItem={({ item}) => (
+              <View style={{marginRight: 5}}>
+                <TouchableOpacity style={[styles.backRightBtn, styles.trashButton]} onPress={() => handleDeleteTask(index)}>
+                  <MaterialCommunityIcons name="trash-can-outline" size={35} color="#FFF" />
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.backRightBtn, styles.editButton]} onPress={() => navigation.navigate('Task')}>
+                  <MaterialCommunityIcons name="pencil" size={35} color="#FFF" />
+                </TouchableOpacity>
+              </View>
+        )}
+            rightOpenValue={-150} // defines the swipeable area width
+            disableRightSwipe={true} // disable swiping from the right side
+            keyExtractor={(item, index) => index.toString()}
+        />
+        </ScrollView>
+        <TouchableOpacity
+            style={styles.buttonbody}
+            onPress={() => {
+                dispatch(setTaskID(tasks.length + 1));
+                navigation.navigate('Task');
+            }}
+        >
+          <Text>Add Task</Text>
         </TouchableOpacity>
-      </KeyboardAvoidingView>
-      
     </View>
-  );
+)
 }
 
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#E8EAED',
+    container:{
+      flex: 1,
+      alignItems: 'center',
+      padding: 10,
+      backgroundColor: '#abcdef',
+    },
+    body: {
+      flex: 1,
+      alignItems: 'center',
+      padding: 10,
+      backgroundColor: '#abcdef',
+    },
+    input: {
+      width: '100%',
+      borderWidth: 1,
+      borderColor: '#555555',
+      borderRadius: 10,
+      backgroundColor: '#ffffff',
+      textAlign: 'left',
+      fontSize: 20,
+      margin: 10,
+      padding:10,
+    },
+    buttonbody: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 150,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: '#669cff',
+      borderSize: 1
+    },
+    text: {
+      fontSize: 20,
+      padding: 10,
+      color: '#000000',
+    },
+    title: {
+      marginLeft: 10,
+      fontSize: 20,
+      padding: 0,
+      color: '#000000',
+    },
+    subtext: {
+      marginLeft: 10,
+      fontSize: 15,
+      color: '#9e9e9e',
+    },
+    item: {
+      width: 350,
+      height: 50,
+      marginVertical: 7,
+      paddingHorizontal: 10,
+      backgroundColor: '#ffffff',
+      justifyContent: 'center',
+      borderRadius: 10,
+      elevation: 5,
+      marginLeft: 0,
+      marginRight: 10
   },
   tasksWrapper: {
     paddingTop: 80,
     paddingHorizontal: 20,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold'
-  },
-  items: {
-    marginTop: 30,
-  },
-  writeTaskWrapper: {
-    position: 'absolute',
-    bottom: 60,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-  input: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    backgroundColor: '#FFF',
-    borderRadius: 60,
-    borderColor: '#C0C0C0',
-    borderWidth: 1,
-    width: 250,
-  },
-  addWrapper: {
-    width: 60,
-    height: 60,
-    backgroundColor: '#FFF',
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#C0C0C0',
-    borderWidth: 1,
-  },
   editButton: {
     backgroundColor: 'blue',
     right: 75,
+    width: 80,
     marginRight: 'auto',
 
   },
   trashButton: {
     backgroundColor: 'red',
-    right: 4,
-    width: 75,
-    marginRight: 0,
+    right: 0,
+    height: 50,
+    width: 80,
     marginLeft: 'auto',
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
 
   },
   backRightBtn: {
     alignItems: 'center',
-    bottom: 0,
     justifyContent: 'center',
     position: 'absolute',
-    top: 0,
-    width: 75,
+    width: 100,
     height: 50,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    borderTopLeftRadius: 5,
-    borderBottomLeftRadius: 5,
-    
-  }
-});
+    marginVertical: 7,
+    paddingHorizontal: 10,
+  },
+})

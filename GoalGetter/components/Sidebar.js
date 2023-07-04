@@ -4,7 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Dashboard from '../Screens/Dashboard';
 import About from '../Screens/About';
-import ToDoList from '../Screens/ToDoList'
+import ToDoList from '../Screens/ToDoList';
+import Task from '../Screens/Task';
 import {Avatar, Title, Caption, Paragraph} from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
@@ -25,6 +26,10 @@ const Sidebar = () => {
                 key = 'To Do List'
                 name = 'To Do List'
                 component={ToDoList} />
+                <Drawer.Screen
+                key = 'Task'
+                name = 'Task'
+                component={Task} />
             </Drawer.Navigator>
         </NavigationContainer>
     )

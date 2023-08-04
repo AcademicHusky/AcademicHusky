@@ -6,6 +6,7 @@ import Dashboard from '../Screens/Dashboard';
 import About from '../Screens/About';
 import ToDoList from '../Screens/ToDoList';
 import Task from '../Screens/Task';
+import Calendar from '../Screens/calendarScreen'
 import {Avatar, Title, Caption, Paragraph} from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
@@ -30,6 +31,10 @@ const Sidebar = () => {
                 key = 'Task'
                 name = 'Task'
                 component={Task} />
+                <Drawer.Screen
+                key = 'Calendar'
+                name = 'Calendar'
+                component={Calendar} />
             </Drawer.Navigator>
         </NavigationContainer>
     )
